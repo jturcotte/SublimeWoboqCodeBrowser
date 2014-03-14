@@ -13,7 +13,7 @@ class OpenCodeBrowser(sublime_plugin.WindowCommand):
         pt = v.sel()[0]
         symbol = v.substr(v.word(pt))
 
-        c = http.client.HTTPConnection("acid.woboq.im:8001")
+        c = http.client.HTTPConnection("code.woboq.org")
         c.request("GET", "/api/fn/" + symbol)
         entries = sublime.decode_value(c.getresponse().read().decode())
         c.close()
