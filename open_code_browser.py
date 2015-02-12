@@ -1,6 +1,7 @@
 import sublime, sublime_plugin
 import http.client
 import webbrowser
+import urllib.parse
 
 class OpenCodeBrowser(sublime_plugin.WindowCommand):
 
@@ -15,9 +16,15 @@ class OpenCodeBrowser(sublime_plugin.WindowCommand):
 
         c = http.client.HTTPConnection("code.woboq.org")
         c.request("GET", "/api/fn/" + symbol)
-        entries = sublime.decode_value(c.getresponse().read().decode())
+        r = c.getresponse()
+        if r.status != 200:
+            c.close()
+            sublime.status_message("Error querying server: " + str(r.status) + " " + r.reason)
+            return
+
+        entries = sublime.decode_value(r.read().decode())
         c.close()
 
         self.window.show_quick_panel(
-            [e['name'] for e in entries],
+            [[e['name'], urllib.parse.urlparse(e['url']).path[1:-5]] for e in entries],
             lambda x: webbrowser.open(entries[x]['url']) if x > -1 else sublime.status_message("Unable to find " + symbol))
