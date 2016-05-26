@@ -14,7 +14,7 @@ class OpenCodeBrowser(sublime_plugin.WindowCommand):
         pt = v.sel()[0]
         symbol = v.substr(v.word(pt))
 
-        c = http.client.HTTPConnection("code.woboq.org")
+        c = http.client.HTTPSConnection("code.woboq.org")
         c.request("GET", "/api/fn/" + symbol)
         r = c.getresponse()
         if r.status != 200:
